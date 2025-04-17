@@ -105,9 +105,9 @@ export default function Home() {
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* 👤 Selected user profile + repos */}
+      {selectedUser && <UserCard user={selectedUser} />}
       {selectedUser && (
         <>
-          <UserCard user={selectedUser} />
           <RepoList repos={repos} />
 
           {/* ⏩ Pagination */}
