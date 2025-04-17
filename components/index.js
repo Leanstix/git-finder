@@ -43,27 +43,10 @@ export default function Home() {
         `https://api.github.com/users/${username}/repos?per_page=5&page=${pageNum}`
       );
       const data = await res.json();
-  
-      // 🛡️ Check if GitHub returned an error
-      if (!Array.isArray(data)) {
-        setRepos([]);
-        setHasNextPage(false);
-        console.error("GitHub API error:", data.message);
-        return;
-      }
-  
-      // 🧠 If last page is empty, stay on current page (don’t advance)
-      if (data.length === 0 && pageNum > 1) {
-        setHasNextPage(false);
-        return;
-      }
-  
       setRepos(data);
       setHasNextPage(data.length === 5);
     } catch (err) {
       console.error("Repo fetch error:", err);
-      setRepos([]);
-      setHasNextPage(false);
     }
   };
   
