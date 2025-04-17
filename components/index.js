@@ -117,39 +117,37 @@ export default function Home() {
       {/* 👤 Selected user profile + repos */}
       {selectedUser && (
         <>
-          {selectedUser && <UserCard user={selectedUser} />}
+          <UserCard user={selectedUser} />
           <RepoList repos={repos} />
 
           {/* ⏩ Pagination */}
-          {selectedUser?.login && (
-            <div className="max-w-xl mx-auto flex justify-between mt-4">
-              {page > 1 && (
-                <button
-                  onClick={async () => {
-                    const newPage = page - 1;
-                    setPage(newPage);
-                    await fetchRepos(selectedUser.login, newPage);
-                  }}
-                  className="px-4 py-2 bg-gray-200 rounded"
-                >
-                  Previous
-                </button>
-              )}
-              {hasNextPage && (
-                <button
-                  onClick={async () => {
-                    const newPage = page + 1;
-                    setPage(newPage);
-                    await fetchRepos(selectedUser.login, newPage);
-                  }}
-                  className="px-4 py-2 bg-gray-200 rounded"
-                >
-                  Next
-                </button>
-              )}
-            </div>
+          <div className="max-w-xl mx-auto flex justify-between mt-4">
+          {page > 1 && selectedUser?.login && (
+            <button
+              onClick={async () => {
+                const newPage = page - 1;
+                setPage(newPage);
+                await fetchRepos(selectedUser.login, newPage);
+              }}
+              className="px-4 py-2 bg-gray-200 rounded"
+            >
+              Previous
+            </button>
           )}
 
+          {hasNextPage && selectedUser?.login && (
+            <button
+              onClick={async () => {
+                const newPage = page + 1;
+                setPage(newPage);
+                await fetchRepos(selectedUser.login, newPage);
+              }}
+              className="px-4 py-2 bg-gray-200 rounded"
+            >
+              Next
+            </button>
+          )}
+          </div>
         </>
       )}
     </main>
