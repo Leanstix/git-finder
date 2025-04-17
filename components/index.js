@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
+import debounce from "lodash/debounce";
+import api from "../lib/api"; // use your axios instance
 import UserCard from "./UserCard";
 import RepoList from "./RepoList";
-import debounce from "lodash/debounce";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -13,15 +14,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🔍 Search users as user types
   const searchUsers = async (query) => {
     if (!query) {
       setUserResults([]);
       return;
     }
     try {
-      const res = await fetch(`https://api.github.com/search/users?q=${query}`);
-      const data = await res.json();
+      const { data } = await api.get(`/search/users?q=${query}`);
       setUserResults(data.items || []);
     } catch (err) {
       console.error("Search error:", err);
@@ -34,13 +33,11 @@ export default function Home() {
     return () => debouncedSearch.cancel();
   }, [search]);
 
-  // 📦 Fetch repos by page
   const fetchRepos = async (username, pageNum = 1) => {
     try {
-      const res = await fetch(
-        `https://api.github.com/users/${username}/repos?per_page=5&page=${pageNum}`
-      );
-      const data = await res.json();
+      const { data } = await api.get(`/users/${username}/repos`, {
+        params: { per_page: 5, page: pageNum },
+      });
       setRepos(data);
       setHasNextPage(data.length === 5);
     } catch (err) {
@@ -51,8 +48,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-2xl font-bold text-center mb-6">GitHub User Finder</h1>
-
-      {/* 🔍 Search input */}
       <form onSubmit={(e) => e.preventDefault()} className="max-w-md mx-auto flex gap-2 mb-6">
         <input
           type="text"
@@ -63,7 +58,6 @@ export default function Home() {
         />
       </form>
 
-      {/* 📋 User suggestions */}
       {userResults.length > 0 && !selectedUser && (
         <div className="max-w-xl mx-auto mt-4 space-y-3">
           {userResults.map((u) => (
@@ -75,8 +69,7 @@ export default function Home() {
                 setUserResults([]);
                 setLoading(true);
                 try {
-                  const profileRes = await fetch(`https://api.github.com/users/${u.login}`);
-                  const profileData = await profileRes.json();
+                  const { data: profileData } = await api.get(`/users/${u.login}`);
                   setSelectedUser(profileData);
                   setPage(1);
                   await fetchRepos(u.login, 1);
@@ -98,13 +91,10 @@ export default function Home() {
       {loading && <p className="text-center">Loading...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
 
-      {/* 👤 Selected user profile + repos */}
       {selectedUser && (
         <>
           <UserCard user={selectedUser} />
           <RepoList repos={repos} />
-
-          {/* ⏩ Pagination */}
           <div className="max-w-xl mx-auto flex justify-between mt-4">
             {page > 1 && (
               <button
