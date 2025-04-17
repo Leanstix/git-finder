@@ -43,10 +43,21 @@ export default function Home() {
         `https://api.github.com/users/${username}/repos?per_page=5&page=${pageNum}`
       );
       const data = await res.json();
+  
+      // 🛡️ Handle API error messages
+      if (!Array.isArray(data)) {
+        setRepos([]);
+        setHasNextPage(false);
+        console.error("GitHub API error:", data.message);
+        return;
+      }
+  
       setRepos(data);
-      setHasNextPage(data.length === 5);
+      setHasNextPage(data.length === 5); // GitHub returns max 5
     } catch (err) {
       console.error("Repo fetch error:", err);
+      setRepos([]);
+      setHasNextPage(false);
     }
   };
 
@@ -110,33 +121,34 @@ export default function Home() {
           <RepoList repos={repos} />
 
           {/* ⏩ Pagination */}
-          <div className="max-w-xl mx-auto flex justify-between mt-4">
-          {page > 1 && selectedUser?.login && (
-            <button
-              onClick={async () => {
-                const newPage = page - 1;
-                setPage(newPage);
-                await fetchRepos(selectedUser.login, newPage);
-              }}
-              className="px-4 py-2 bg-gray-200 rounded"
-            >
-              Previous
-            </button>
+          {repos.length > 0 && selectedUser?.login && (
+            <div className="max-w-xl mx-auto flex justify-between mt-4">
+              {page > 1 && (
+                <button
+                  onClick={async () => {
+                    const newPage = page - 1;
+                    setPage(newPage);
+                    await fetchRepos(selectedUser.login, newPage);
+                  }}
+                  className="px-4 py-2 bg-gray-200 rounded"
+                >
+                  Previous
+                </button>
+              )}
+              {hasNextPage && (
+                <button
+                  onClick={async () => {
+                    const newPage = page + 1;
+                    setPage(newPage);
+                    await fetchRepos(selectedUser.login, newPage);
+                  }}
+                  className="px-4 py-2 bg-gray-200 rounded"
+                >
+                  Next
+                </button>
+              )}
+            </div>
           )}
-
-          {hasNextPage && selectedUser?.login && (
-            <button
-              onClick={async () => {
-                const newPage = page + 1;
-                setPage(newPage);
-                await fetchRepos(selectedUser.login, newPage);
-              }}
-              className="px-4 py-2 bg-gray-200 rounded"
-            >
-              Next
-            </button>
-          )}
-          </div>
         </>
       )}
     </main>
