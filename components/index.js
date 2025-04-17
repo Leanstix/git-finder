@@ -117,11 +117,11 @@ export default function Home() {
       {/* 👤 Selected user profile + repos */}
       {selectedUser && (
         <>
-          <UserCard user={selectedUser} />
+          {selectedUser && <UserCard user={selectedUser} />}
           <RepoList repos={repos} />
 
           {/* ⏩ Pagination */}
-          {repos.length > 0 && selectedUser?.login && (
+          {selectedUser?.login && (
             <div className="max-w-xl mx-auto flex justify-between mt-4">
               {page > 1 && (
                 <button
@@ -149,6 +149,7 @@ export default function Home() {
               )}
             </div>
           )}
+
         </>
       )}
     </main>
