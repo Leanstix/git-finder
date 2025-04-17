@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🔍 Search users as user types
+  // Search users as user types
   const searchUsers = async (query) => {
     if (!query) {
       setUserResults([]);
@@ -34,7 +34,7 @@ export default function Home() {
     return () => debouncedSearch.cancel();
   }, [search]);
 
-  // 📦 Fetch repos by page
+  // Fetch repos by page
   const fetchRepos = async (username, pageNum = 1) => {
     try {
       const res = await fetch(
@@ -58,13 +58,16 @@ export default function Home() {
           type="text"
           placeholder="Search GitHub users"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setSelectedUser(null); // Clear selected user when searching
+          }}          
           className="flex-1 p-2 border rounded"
         />
       </form>
 
       {/* 📋 User suggestions */}
-      {userResults.length > 0 && !selectedUser && (
+      {userResults.length > 0 && search && (
         <div className="max-w-xl mx-auto mt-4 space-y-3">
           {userResults.map((u) => (
             <div
