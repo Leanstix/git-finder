@@ -1,7 +1,9 @@
+// components/Home.js
 import { useState, useEffect, useMemo } from "react";
 import UserCard from "./UserCard";
 import RepoList from "./RepoList";
 import debounce from "lodash/debounce";
+import axios from "axios";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -20,9 +22,10 @@ export default function Home() {
       return;
     }
     try {
-      const res = await fetch(`https://api.github.com/search/users?q=${query}`);
-      const data = await res.json();
-      setUserResults(data.items || []);
+      const res = await axios.get(`https://api.github.com/search/users`, {
+        params: { q: query },
+      });
+      setUserResults(res.data.items || []);
     } catch (err) {
       console.error("Search error:", err);
     }
@@ -37,12 +40,12 @@ export default function Home() {
   // 📦 Fetch repos by page
   const fetchRepos = async (username, pageNum = 1) => {
     try {
-      const res = await fetch(
-        `https://api.github.com/users/${username}/repos?per_page=5&page=${pageNum}`
+      const res = await axios.get(
+        `https://api.github.com/users/${username}/repos`,
+        { params: { per_page: 5, page: pageNum } }
       );
-      const data = await res.json();
-      setRepos(data);
-      setHasNextPage(data.length === 5);
+      setRepos(res.data);
+      setHasNextPage(res.data.length === 5);
     } catch (err) {
       console.error("Repo fetch error:", err);
     }
@@ -50,8 +53,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">GitHub User Finder</h1>
-
+      
       {/* 🔍 Search input */}
       <form onSubmit={(e) => e.preventDefault()} className="max-w-md mx-auto flex gap-2 mb-6">
         <input
@@ -76,8 +78,8 @@ export default function Home() {
                 setSelectedUser(null); 
                 setLoading(true);
                 try {
-                  const profileRes = await fetch(`https://api.github.com/users/${u.login}`);
-                  const profileData = await profileRes.json();
+                  const profileRes = await axios.get(`https://api.github.com/users/${u.login}`);
+                  const profileData = profileRes.data;
                   setSelectedUser(profileData);
                   setPage(1);
                   await fetchRepos(u.login, 1);

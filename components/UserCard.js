@@ -1,3 +1,4 @@
+// components/UserCard.js
 export default function UserCard({ user }) {
     if (!user) return null;
   
