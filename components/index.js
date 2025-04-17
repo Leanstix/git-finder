@@ -73,7 +73,7 @@ export default function Home() {
               onClick={async () => {
                 setSearch("");
                 setUserResults([]);
-                setSelectedUser(null);
+                setSelectedUser(null); 
                 setLoading(true);
                 try {
                   const profileRes = await fetch(`https://api.github.com/users/${u.login}`);
