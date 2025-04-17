@@ -78,8 +78,7 @@ export default function Home() {
                 setSearch("");
                 setUserResults([]);
                 setLoading(true);
-                setSearch(e.target.value);
-                setSelectedUser(null); 
+                setSelectedUser(null);
                 try {
                   const profileRes = await fetch(`https://api.github.com/users/${u.login}`);
                   const profileData = await profileRes.json();
