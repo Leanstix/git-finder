@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Search users as user types
+  // 🔍 Search users as user types
   const searchUsers = async (query) => {
     if (!query) {
       setUserResults([]);
@@ -34,30 +34,17 @@ export default function Home() {
     return () => debouncedSearch.cancel();
   }, [search]);
 
-  // Fetch repos by page
+  // 📦 Fetch repos by page
   const fetchRepos = async (username, pageNum = 1) => {
-    if (!username) return;
-  
     try {
       const res = await fetch(
         `https://api.github.com/users/${username}/repos?per_page=5&page=${pageNum}`
       );
       const data = await res.json();
-  
-      // 🛡️ Handle API error messages
-      if (!Array.isArray(data)) {
-        setRepos([]);
-        setHasNextPage(false);
-        console.error("GitHub API error:", data.message);
-        return;
-      }
-  
       setRepos(data);
-      setHasNextPage(data.length === 5); // GitHub returns max 5
+      setHasNextPage(data.length === 5);
     } catch (err) {
       console.error("Repo fetch error:", err);
-      setRepos([]);
-      setHasNextPage(false);
     }
   };
 
@@ -73,8 +60,9 @@ export default function Home() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setSelectedUser(null); // Clear selected user when searching
-          }}          
+            setSelectedUser(null); // show results when typing again
+          }}
+          
           className="flex-1 p-2 border rounded"
         />
       </form>
