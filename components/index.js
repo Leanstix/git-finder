@@ -58,11 +58,7 @@ export default function Home() {
           type="text"
           placeholder="Search GitHub users"
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setSelectedUser(null); // show results when typing again
-          }}
-          
+          onChange={(e) => setSearch(e.target.value)}
           className="flex-1 p-2 border rounded"
         />
       </form>
@@ -77,6 +73,8 @@ export default function Home() {
               onClick={async () => {
                 setSearch("");
                 setUserResults([]);
+                setSearch(e.target.value);
+                setSelectedUser(null); 
                 setLoading(true);
                 try {
                   const profileRes = await fetch(`https://api.github.com/users/${u.login}`);
